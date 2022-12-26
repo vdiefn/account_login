@@ -25,23 +25,26 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 
-app.get('/', (req,res) =>{
+app.get('/', (req, res) =>{
   res.render('index')
 })
 
 app.post('/', (req, res) => {
-  console.log(req.body.email)
-  console.log(req.body.password)
   const email = req.body.email
   const password = req.body.password
-  return User.findOne({email:email})
+  return User.findOne({ email })
     .lean()
     .then((user) => {
       if(user !== null){
-        if(user.password === password)
-        res.render('detail', {user})
-      }else {
-        return res.redirect('/')
+        if(user.password === password){
+          res.render('detail', { user })
+        } else {
+          const wrong = 'Email 或 Password 錯誤'
+          return res.render('index', { wrong })
+        }
+      }else{
+        const wrong = 'Username 或 Password 錯誤'
+        return res.render('index', { wrong })
       }
     })   
 })
